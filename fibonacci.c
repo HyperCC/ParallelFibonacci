@@ -6,7 +6,7 @@
  * CÓDIGO ORIGINAL ---
  */
 
-int fib(int n) {
+int fibonacciCalc(int n) {
    int i, j;
    if (n<2)
       return n;
