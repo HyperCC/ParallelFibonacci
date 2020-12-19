@@ -8,9 +8,12 @@
  * @return
  */
 int fibonacciCalc(int n) {
+
     int i, j;
+
     if (n < 2)
         return n;
+
     else {
 #pragma omp task shared(i)
         i = fibonacciCalc(n - 1);
@@ -53,15 +56,25 @@ void factorization(int fibNum) {
  * @return
  */
 int main(int argc, char **argv) {
+
     int n, result;
     char *a = argv[1];
-    n = atoi(a);
+    //n = atoi(a);
+    n = 30;
 
-#pragma omp parallel
-    {
-#pragma omp single
-        result = fibonacciCalc(n);
+    printf("Fibonacci code\n");
+
+#pragma omp parallel for default (shared) private(i) reduction(+:result)
+    for (int i = 0; i <= n; i++) {
+        result = fibonacciCalc(i);
+        printf("%d : %d = ", i, result);
+        factorization(result);
+        printf("\n");
+        // calcular factor
     }
-    printf("Result is %d\n", result);
+
+    //printf("Result is %d\n", result);
+    printf("Finalization ..");
+
     return 0;
 }
