@@ -2,44 +2,45 @@
 #include <stdlib.h>
 #include <omp.h>
 #include <gmp.h>
-#include <math.h>
-
-/**
- * Calculation from a number to fibonacci
- * @param n
- * @return
- */
-
 
 /**
  * Factorization of the fibonacci numbers
  * @param fibNum
  */
-void factorization(int fibNum) {
-    int divisor = 2;
 
-    if (fibNum <= 5) {
-        printf("%d", fibNum);
+void factorizar(mpz_t fibNum) {
+
+    mpz_t divisor;
+    mpz_init(divisor);
+    mpz_set_ui(divisor, 2);
+
+    // if (fibNum <= 5) {
+    if (mpz_cmp_d(fibNum, 5) <= 0) {
+        gmp_printf("%Zd ", fibNum);
 
     } else {
-        while (fibNum != 1) {
+        while (mpz_get_ui(fibNum) != 1) {
 
-            if (fibNum % divisor == 0) {
-                printf("%d ", divisor);
-                fibNum = fibNum / divisor;
+            if (mpz_get_ui(fibNum) % mpz_get_ui(divisor) == 0) {
+                gmp_printf("%Zd ", divisor);
+                mpz_cdiv_q(fibNum, fibNum, divisor);
 
-                if (fibNum != 1)
+                if (mpz_get_ui(fibNum) != 1)
                     printf("x ");
 
             } else {
-                divisor++;
+                mpz_add_ui(divisor, divisor, 1);
             }
         }
+
     }
+
+    mpz_clear(divisor);
 }
 
+
 /**
- * Main class
+ * Main class: Calculation from a number to fibonacci
  * @return
  */
 int main(int argc, char **argv) {
@@ -48,11 +49,11 @@ int main(int argc, char **argv) {
 
     mpz_t frstFib;
     mpz_t scndFib;
-    mpz_t sumFib;
+    mpz_t fibonacci;
 
     mpz_init_set_str(frstFib, "0", 10);
     mpz_init_set_str(scndFib, "1", 10);
-    mpz_init_set_str(sumFib, "0", 10);
+    mpz_init_set_str(fibonacci, "1", 10);
 
     char *a = argv[1];
     int n = atoi(a);
@@ -61,21 +62,22 @@ int main(int argc, char **argv) {
 
     for (int i = 1; i <= n; ++i) {
 
-        mpz_add(sumFib, frstFib, scndFib);
-        //sumFib = frstFib + scndFib;
+        gmp_printf("%d : %Zd = ", i, fibonacci);
 
+        factorizar(fibonacci);
+        printf("\n");
+
+        mpz_add(fibonacci, frstFib, scndFib);
         mpz_set(frstFib, scndFib);
-        mpz_set(scndFib, sumFib);
-        //frstFib = scndFib;
-        //scndFib = sumFib;
+        mpz_set(scndFib, fibonacci);
 
-        gmp_printf("%d -> %Zd \n", i, sumFib);
-        //printf("%i -> %d \n", i, frstFib);
     }
 
     mpz_clear(frstFib);
     mpz_clear(scndFib);
-    mpz_clear(sumFib);
+    mpz_clear(fibonacci);
+
+    printf("\nFinalization ..\n");
 
     return 0;
 }
