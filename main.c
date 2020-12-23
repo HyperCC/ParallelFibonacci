@@ -1,28 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <gmp.h>
+#include <math.h>
 
 /**
  * Calculation from a number to fibonacci
  * @param n
  * @return
  */
-int fibonacciCalc(int n) {
 
-    int i, j;
-
-    if (n < 2)
-        return n;
-
-    else {
-#pragma omp task shared(i)
-        i = fibonacciCalc(n - 1);
-#pragma omp task shared(j)
-        j = fibonacciCalc(n - 2);
-#pragma omp taskwait
-        return i + j;
-    }
-}
 
 /**
  * Factorization of the fibonacci numbers
@@ -57,24 +44,38 @@ void factorization(int fibNum) {
  */
 int main(int argc, char **argv) {
 
-    int n, result;
+    printf("---------- Fibonacci code print and factorization ----------\n");
+
+    mpz_t frstFib;
+    mpz_t scndFib;
+    mpz_t sumFib;
+
+    mpz_init_set_str(frstFib, "0", 10);
+    mpz_init_set_str(scndFib, "1", 10);
+    mpz_init_set_str(sumFib, "0", 10);
+
     char *a = argv[1];
-    //n = atoi(a);
-    n = 30;
+    int n = atoi(a);
 
-    printf("Fibonacci code\n");
+    printf("Fibonacci Code to n=%d \n\n", n);
 
-#pragma omp parallel for default (shared) private(i) reduction(+:result)
-    for (int i = 0; i <= n; i++) {
-        result = fibonacciCalc(i);
-        printf("%d : %d = ", i, result);
-        factorization(result);
-        printf("\n");
-        // calcular factor
+    for (int i = 1; i <= n; ++i) {
+
+        mpz_add(sumFib, frstFib, scndFib);
+        //sumFib = frstFib + scndFib;
+
+        mpz_set(frstFib, scndFib);
+        mpz_set(scndFib, sumFib);
+        //frstFib = scndFib;
+        //scndFib = sumFib;
+
+        gmp_printf("%d -> %Zd \n", i, sumFib);
+        //printf("%i -> %d \n", i, frstFib);
     }
 
-    //printf("Result is %d\n", result);
-    printf("Finalization ..");
+    mpz_clear(frstFib);
+    mpz_clear(scndFib);
+    mpz_clear(sumFib);
 
     return 0;
 }
