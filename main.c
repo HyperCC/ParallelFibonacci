@@ -7,7 +7,6 @@
  * Factorization of the fibonacci numbers
  * @param fibNum
  */
-
 void factorizar(mpz_t fibNum) {
 
     // variable declaration and initialization
@@ -25,17 +24,17 @@ void factorizar(mpz_t fibNum) {
             // print te validated value to factorization
             if (mpz_get_ui(fibNum) % mpz_get_ui(divisor) == 0) {
                 gmp_printf("%Zd ", divisor);
+
                 mpz_cdiv_q(fibNum, fibNum, divisor);
 
                 if (mpz_get_ui(fibNum) != 1)
                     printf("x ");
 
             } else {
-                // divide for the factor founded
+                // divisor++
                 mpz_add_ui(divisor, divisor, 1);
             }
         }
-
     }
 
     // clear the memory usage
@@ -67,7 +66,9 @@ int main(int argc, char **argv) {
 
     printf("Fibonacci Code to n=%d \n\n", n);
 
-    for (int i = 1; i <= n; ++i) {
+    int i;
+#pragma omp parallel
+    for (i = 1; i <= n; ++i) {
 
         // print all fibonacci series founded
         gmp_printf("%d : %Zd = ", i, fibonacci);
@@ -80,7 +81,6 @@ int main(int argc, char **argv) {
         mpz_add(fibonacci, frstFib, scndFib);
         mpz_set(frstFib, scndFib);
         mpz_set(scndFib, fibonacci);
-
     }
 
     // clear variables GMP
